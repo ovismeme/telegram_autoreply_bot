@@ -1,0 +1,4 @@
+# Set token to api_key and copy this file to setting directory
+
+[login]
+api_key = TOKEN
