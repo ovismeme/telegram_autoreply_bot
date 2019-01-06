@@ -85,7 +85,7 @@ def autoreply(bot, replyLists):
                         reply_len = len(reply_ptn[1])
                         random.seed
                         if reply_len != 1:
-                            reply_point = random.randrange(1, reply_len) - 1
+                            reply_point = random.randrange(reply_len)
                         else:
                             reply_point = 0
                         reply_text = reply_ptn[1][reply_point]
