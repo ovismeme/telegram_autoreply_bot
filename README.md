@@ -1,4 +1,4 @@
-# how to install
+# How to install
 Pull this repository.
 
 Create your bot account at telegram
