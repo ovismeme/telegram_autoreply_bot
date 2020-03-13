@@ -24,6 +24,16 @@ class TelegramBot:
         self.CYCLE_SPAN = str(config.get('Ingress', 'CYCLE_SPAN'))
         self.CP_SPAN = str(config.get('Ingress', 'CP_SPAN'))
         self.bot = telegram.Bot(self.TELEGRAM_TOKEN)
+        try:
+            self.update_id = self.bot.get_updates()[0].update_id
+        except IndexError:
+            self.update_id = None
+        try:
+            self.replyLists = self.jsonReader()
+        except json.JSONDecodeError as e:
+            raise('JSONファイルが不正です。')
+        except Exception  as e:
+            raise(e)
 
     def jsonReader(self):
         """Read json file for autoreply"""
@@ -33,22 +43,6 @@ class TelegramBot:
 
     def main(self):
         """Run the bot."""
-        # 現在のupdate_idを取得
-        try:
-            self.update_id = self.bot.get_updates()[0].update_id
-        except IndexError:
-            self.update_id = None
-
-        # JSONファイルから設定を取得。取得できなかったら終了。
-        try:
-            self.replyLists = self.jsonReader()
-        except json.JSONDecodeError as e:
-            print('JSONファイルが不正です。')
-            return False
-        except Exception  as e:
-            print(e)
-            return False
-
         while True:
             try:
                 self.autoreply()
@@ -63,45 +57,33 @@ class TelegramBot:
         # 前回更新以降の更新がないかを確認
         for update in self.bot.get_updates(offset=self.update_id, timeout=10):
             self.update_id = update.update_id + 1
-
-            if update.message:  # メッセージ更新時に発火
-                for reply_ptn in self.replyLists['autoreplies']:
-                    for reply_trgs in reply_ptn[0]:
-                        matched = False
-                        rcv_text = str(update.message.text)
-                        if re.match('regex:', reply_trgs) is not None:
-                            fix_reply_trg = reply_trgs.replace('regex:', '')
-                            if re.match(fix_reply_trg, rcv_text) is not None:
-                                matched = True
-                        elif(rcv_text == reply_trgs):
-                            matched = True
-
-                        if(matched is True):
-                            reply_len = len(reply_ptn[1])
-                            random.seed
-                            if reply_len != 1:
-                                reply_point = random.randrange(reply_len)
-                            else:
-                                reply_point = 0
-                            reply_text = reply_ptn[1][reply_point]
-                            # リプライに"/がついていたら機能判定実施
-                            if re.match('/', reply_text) is not None:
-                                reply_text = self.checkReply(reply_text, rcv_text)
-                            # Reply to the message
-                            update.message.reply_text(reply_text)
-
+            if not update.message:
+                continue
+            for reply_ptn in self.replyLists['autoreplies']:
+                for reply_trg in reply_ptn[0]:
+                    rcv_text = str(update.message.text)
+                    if (re.match('regex:', reply_trg) is None or re.match(reply_trg.replace('regex:', ''), rcv_text) is None) and rcv_text != reply_trg:
+                        continue
+                    reply_text = reply_ptn[1][random.randrange(len(reply_ptn[1]))]
+                    # リプライに"/がついていたら機能判定実施
+                    if re.match('/', reply_text) is not None:
+                        reply_text = self.checkReply(reply_text, rcv_text)
+                    # Reply to the message
+                    update.message.reply_text(reply_text)
 
     def checkReply(self, reply_text, rcv_text):
         # 判定を実施し、機能呼び出し
         if re.match('/cp', reply_text) is not None:
             return_text = self.countCycle(rcv_text)
         elif re.match('/reload', reply_text) is not None:
-            self.jsonReader()
-            return_text = 'Reload reply-setting...'
+            try:
+                self.jsonReader()
+                return_text = 'Reload reply-setting...OK!'
+            except json.JSONDecodeError:
+                return_text = 'JSON Error in ' + str(self.REPLY_SETTINGS)
         else:
             return_text = reply_text
         return(return_text)
-
 
     def countCycle(self, rcv_text):
         """
