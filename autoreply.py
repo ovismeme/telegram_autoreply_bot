@@ -21,8 +21,8 @@ class TelegramBot:
         config = configparser.ConfigParser()
         config.read(config_file, 'utf-8')
         self.TELEGRAM_TOKEN = str(config.get('login', 'api_key'))
-        self.CYCLE_SPAN = str(config.get('Ingress', 'CYCLE_SPAN'))
-        self.CP_SPAN = str(config.get('Ingress', 'CP_SPAN'))
+        self.CYCLE_SPAN = int(config.get('Ingress', 'CYCLE_SPAN'))
+        self.CP_SPAN = int(config.get('Ingress', 'CP_SPAN'))
         self.bot = telegram.Bot(self.TELEGRAM_TOKEN)
         try:
             self.update_id = self.bot.get_updates()[0].update_id
