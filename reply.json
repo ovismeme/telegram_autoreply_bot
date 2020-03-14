@@ -477,11 +477,10 @@
     ],
     [
       [
-        "regex:^checkpoint.*",
-        "regex:^/cp.*"
+        "/whoami"
       ],
       [
-        "/cp"
+        "/whoami"
       ]
     ],
     [
@@ -491,5 +490,6 @@
       [
         "/reload"
       ]
-    ]  ]
+    ]
+  ]
 }

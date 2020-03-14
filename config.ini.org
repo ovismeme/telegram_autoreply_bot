@@ -2,7 +2,3 @@
 
 [login]
 api_key = TOKEN
-
-[Ingress]
-CYCLE_SPAN = 630000
-CP_SPAN = 18000
