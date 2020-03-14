@@ -4,15 +4,15 @@
 edit echobot to autoreplybot
 20190102 made by ovismeme
 """
-import telegram
-from telegram.error import NetworkError, Unauthorized
 from time import time, sleep
 from datetime import datetime, timezone, timedelta
 import json
 import re
 import random
 import configparser
-
+import telegram
+from telegram.error import NetworkError, Unauthorized
+import cotoha
 
 class TelegramBot:
     def __init__(self):
@@ -81,6 +81,15 @@ class TelegramBot:
                 return_text = 'JSON Error in ' + str(self.REPLY_SETTINGS)
         elif reply_text == '/whoami':
             return_text = self.rcv_user
+        elif reply_text == '/checkemote':
+            #感情分析
+            # try:
+            cth = cotoha.CotohaController()
+            emote = cth.emotion_analysis(rcv_text)
+            reply_list = self.replyLists['cotoha'][emote]
+            return_text = reply_list[random.randrange(len(reply_list))]
+            # except Exception:
+            #     return_text = "・・・"
         else:
             return_text = reply_text
         return(return_text)

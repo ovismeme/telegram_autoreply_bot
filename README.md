@@ -6,7 +6,8 @@ Create your bot account at telegram
 
 Run below command.
 ```
-install python-telegram-bot
+pip install python-telegram-bot
+pip install requests
 cp config.ini.org settings/config.ini
 ```
 Set your API Token to settings/config.ini

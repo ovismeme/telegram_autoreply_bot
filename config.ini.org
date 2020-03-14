@@ -2,3 +2,9 @@
 
 [login]
 api_key = TOKEN
+
+[cotoha_auth]
+base_url = https://api.ce-cotoha.com/api/dev
+auth_url = https://api.ce-cotoha.com/v1/oauth/accesstokens
+client_id = ID
+client_secret = SECRET
