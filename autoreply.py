@@ -75,7 +75,7 @@ class TelegramBot:
         # 判定を実施し、機能呼び出し
         if reply_text == '/reload':
             try:
-                self.jsonReader()
+                self.replyLists = self.jsonReader()
                 return_text = 'Reload reply-setting...OK!'
             except json.JSONDecodeError:
                 return_text = 'JSON Error in ' + str(self.REPLY_SETTINGS)
@@ -83,13 +83,13 @@ class TelegramBot:
             return_text = self.rcv_user
         elif reply_text == '/checkemote':
             #感情分析
-            # try:
-            cth = cotoha.CotohaController()
-            emote = cth.emotion_analysis(rcv_text)
-            reply_list = self.replyLists['cotoha'][emote]
-            return_text = reply_list[random.randrange(len(reply_list))]
-            # except Exception:
-            #     return_text = "・・・"
+            try:
+                cth = cotoha.CotohaController()
+                emote = cth.emotion_analysis(rcv_text)
+                reply_list = self.replyLists['cotoha'][emote]
+                return_text = reply_list[random.randrange(len(reply_list))]
+            except Exception:
+                return_text = "・・・"
         else:
             return_text = reply_text
         return(return_text)
