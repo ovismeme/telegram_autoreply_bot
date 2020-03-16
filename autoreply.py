@@ -55,7 +55,10 @@ class TelegramBot:
         # 前回更新以降の更新がないかを確認
         for update in self.bot.get_updates(offset=self.update_id, timeout=10):
             self.update_id = update.update_id + 1
-            rcv_text = str(update.message.text)
+            try:
+                rcv_text = str(update.message.text)
+            except:
+                rcv_text = str("")
             self.rcv_user = str(update.effective_user['first_name'])
             if not update.message:
                 continue
